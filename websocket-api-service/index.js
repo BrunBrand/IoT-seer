@@ -3,15 +3,16 @@ const WebSocket = require('ws');
 
 const port = 3004;
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('WebSocket API Service');
-});
+const server = http.createServer();
 
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', ws => {
   console.log('Client connected');
+
+  wss.on("message", data =>{
+    console.log("Received: %s", data)
+  })
 
   ws.on('close', () => {
     console.log('Client disconnected');
@@ -19,6 +20,8 @@ wss.on('connection', ws => {
 });
 
 server.on('request', (req, res) => {
+  if(req.headers.upgrade === 'websocket') return 
+
   if (req.method === 'POST' && req.url === '/publish') {
     let body = '';
 
@@ -31,15 +34,13 @@ server.on('request', (req, res) => {
         const data = JSON.parse(body);
         console.log('Publishing data:', data);
 
-        // Broadcast the data to all connected clients
         wss.clients.forEach(client => {
           if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(data));
           }
         });
-
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('Data published to WebSocket clients.');
+        res.writeHead(200, {'Content-Type': 'text/plain'})
+        res.end("Data forwarded")
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.end('Invalid JSON payload');

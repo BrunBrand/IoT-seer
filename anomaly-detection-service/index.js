@@ -60,7 +60,9 @@ function forwardData(average, anomalyScore, response) {
     response.end('Failed to forward data to websocket service.');
   });
 
-  req.write(JSON.stringify({ average: average, anomalyScore: anomalyScore }));
+  const data = JSON.stringify({average: average, anomalyScore: anomalyScore})
+  console.log(`data to be forwaredd ${data}`)
+  req.write(data);
   req.end();
 }
 
