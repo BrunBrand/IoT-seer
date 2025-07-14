@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IoT Anomaly Detection Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>IoT Anomaly Detection Dashboard</h1>
+    <div>
+        <canvas id="dataChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        const chartCtx = document.getElementById('dataChart').getContext('2d');
+        const chart = new Chart(chartCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Average Value',
+                        data: [],
+                        borderColor: 'blue',
+                        fill: false
+                    },
+                    {
+                        label: 'Anomaly Score',
+                        data: [],
+                        borderColor: 'red',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                }
+            }
+        });
+
+        const ws = new WebSocket('ws://localhost:3004');
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received data from WebSocket:', data);
+
+            // Update the chart
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.datasets[0].data.push(data.average);
+            chart.data.datasets[1].data.push(data.anomalyScore);
+
+            chart.update();
+        };
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket');
+        };
+
+        ws.onclose = () => {
+            console.log('Disconnected from WebSocket');
+        };
+    </script>
+</body>
+</html>
