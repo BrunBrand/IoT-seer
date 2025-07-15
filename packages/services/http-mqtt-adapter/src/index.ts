@@ -1,6 +1,6 @@
-const http = require('http');
 import http from "http"
 import mqtt from "mqtt"
+import {z} from "zod"
 
 const port = 3001;
 const client = mqtt.connect("mqtt:localhost:1883")
