@@ -1,0 +1,15 @@
+{
+  "name": "iot-seer",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "processing-service": "node dist/processing-service/index.js",
+    "anomaly-detection-service": "node dist/anomaly-detection-service/index.js",
+    "websocket-api-service": "node dist/websocket-api-service/index.js",
+    "simulated-data": "node dist/simulated-data/send-data.js",
+    "all": "npm run build && concurrently \"npm run processing-service\" \"npm run anomaly-detection-service\" \"npm run websocket-api-service\" "
+  },
+  "dependencies": {
+    "mqtt": "^5.13.2"
+  }
+}
