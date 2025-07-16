@@ -3,5 +3,8 @@
   "private": "true",
   "scripts": {
     "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@iot-seer/config": "1.0.0"
   }
 }

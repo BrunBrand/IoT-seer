@@ -1,0 +1,9 @@
+{
+    "extends": "../../tsconfig.json", // inherits base tsconfig.json file from project root
+    "compilerOptions": {
+        "outDir": "./dist", // build outputs to dist
+        "rootDir": "./src", // source code is organized in src
+        "declaration": true
+    },
+    "include": ["src"]
+}

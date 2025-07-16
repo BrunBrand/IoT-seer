@@ -17,7 +17,7 @@
     "concurrently": "^8.2.2"
   },
   "workspaces": [
-    "packages/*",
+    "packages/config",
     "packages/services/*"
   ]
 }
