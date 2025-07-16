@@ -1,6 +1,6 @@
 import http from "http"
-import WebSocket from "ws";
-import mqtt from "mqtt"
+import {WebSocket} from "ws";
+import * as mqtt from "mqtt"
 
 const port = 3004
 const server = http.createServer();

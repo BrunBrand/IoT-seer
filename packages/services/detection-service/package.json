@@ -1,0 +1,7 @@
+{
+  "name": "@iot-seer/detection-service",
+  "private": "true",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}

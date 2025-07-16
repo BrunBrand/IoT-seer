@@ -1,5 +1,10 @@
 {
+  "name": "@iot-seer/simulated-data",
+  "private": "true",
   "dependencies": {
     "mqtt": "^5.13.2"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
   }
 }

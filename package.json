@@ -2,19 +2,22 @@
   "name": "iot-seer",
   "version": "1.0.0",
   "scripts": {
-    "build": "tsc",
-    "processing-se": "node dist/processing-service/src/index.js",
-    "detection-se": "node dist/anomaly-detection-service/src/index.js",
-    "websocket-api-se": "node dist/websocket-api-service/src/index.js",
-    "simulated-data-se": "node dist/simulated-data/src/index.js",
-    "http-to-mqtt-se": "node dist/http-mqtt-adapter/src/index.js",
+    "build": "npm run build --workspaces",
+    "processing-se": "node packages/services/processing-service/dist/index.js",
+    "detection-se": "node packages/services/detection-service/dist/index.js",
+    "websocket-api-se": "node packages/services/websocket-api-service/dist/index.js",
+    "simulated-data-se": "node packages/services/simulated-data/dist/index.js",
+    "http-to-mqtt-se": "node packages/services/http-mqtt-adapter/dist/index.js",
     "all": "npm run build && concurrently \"npm run http-to-mqtt-se\"  \"npm run processing-se\" \"npm run detection-se\" \"npm run websocket-api-se\" "
   },
   "dependencies": {
     "mqtt": "^5.13.2"
   },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
   "workspaces": [
     "packages/*",
-    "services/*"
+    "packages/services/*"
   ]
 }

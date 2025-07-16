@@ -1,6 +1,11 @@
 {
+  "name": "@iot-seer/websocket-api-service",
+  "private": "true",
   "dependencies": {
     "mqtt": "^5.13.2",
     "ws": "^8.18.3"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
   }
 }
