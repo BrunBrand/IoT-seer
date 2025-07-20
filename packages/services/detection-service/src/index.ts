@@ -1,53 +1,62 @@
-import mqtt from "mqtt"
+import path from "node:path";
 
-import {config} from "@iot-seer/config"
-import {z} from "zod"
+import mqtt from "mqtt";
 
-const broker_url=config.MQTT_BROKER_URL
-const client = mqtt.connect(broker_url)
+import { loadConfig } from "@iot-seer/config";
+import { z } from "zod";
 
-const incomingMessageSchema = z.object({"average": z.coerce.number().default(0)})
+const rootPath = path.dirname(__filename);
 
-client.on("connect", ()=>{
-  console.log(`Connected to MQTT broker ${broker_url}`)
-  client.subscribe(config.TOPICS.PROCESSED_DATA); 
-})
+const configFilePath = path.join(rootPath, "config.toml");
+const config = loadConfig(configFilePath);
 
-client.on("error", (error)=>{
-  console.error(`MQTT connection ${broker_url} error:`, error)
-})
+const client = mqtt.connect(config.mqttBrokerURL);
 
+const incomingMessageSchema = z.object({
+  average: z.coerce.number().default(0),
+});
 
-client.on("message", (topic:string, message:Buffer)=>{
+client.on("connect", () => {
+  console.log(`Connected to MQTT broker ${config.mqttBrokerURL}}`);
+  client.subscribe(config.topics.processedData);
+});
 
-  if(config.NODE_ENV==="development"){
+client.on("error", (error) => {
+  console.error(`MQTT connection ${config.mqttBrokerURL} error:`, error);
+});
+
+client.on("message", (topic: string, message: Buffer) => {
+  if (config.nodeEnv === "development") {
     console.log(`Received message on topic "${topic}": ${message.toString()}`);
   }
-  
-  try{
-    const data = JSON.parse(message.toString())
-    const dataValidated = messageValidator(data)
-    const anomalyScore = getAnomalyScore()
-    forwardData(dataValidated.average, anomalyScore) 
-  }catch(error){
-    if(error instanceof SyntaxError){
-      console.error("Error parsing JSON:", error)
-    } else if(error instanceof z.ZodError){
-      console.error("Validation error:", error)
+
+  try {
+    const data = JSON.parse(message.toString());
+    const dataValidated = messageValidator(data);
+    const anomalyScore = getAnomalyScore();
+    forwardData(dataValidated.average, anomalyScore);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      console.error("Error parsing JSON:", error);
+    } else if (error instanceof z.ZodError) {
+      console.error("Validation error:", error);
     } else {
-      console.error("Unexpected error:",error)
+      console.error("Unexpected error:", error);
     }
   }
-})
+});
 
-function messageValidator(message: Object){
-  return incomingMessageSchema.parse(message)
+function messageValidator(message: Object) {
+  return incomingMessageSchema.parse(message);
 }
 
-function forwardData(average:number, anomalyScore:number) {
-  client.publish(config.TOPICS.ANALYSIS_RESULTS, JSON.stringify({average, anomalyScore}))
+function forwardData(average: number, anomalyScore: number) {
+  client.publish(
+    config.topics.analysisResults,
+    JSON.stringify({ average, anomalyScore })
+  );
 }
 
-function getAnomalyScore(): number{
-  return Math.random()
+function getAnomalyScore(): number {
+  return Math.random();
 }

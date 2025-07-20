@@ -1,13 +1,13 @@
 {
-    "extends": "../../../tsconfig.json", // inherits base tsconfig.json file from project root
-    "compilerOptions": {
-        "outDir": "dist", // build outputs to dist
-        "rootDir": "src", // source code is organized in src
-        "baseUrl": ".",
-        "paths": {
-            "@iot-seer/config": ["../../config/src"]
-        }
-    },
-    "references": [{"path": "../../config"}],
-    "include": ["src"]
+  "extends": "../../../tsconfig.json", // inherits base tsconfig.json file from project root
+  "compilerOptions": {
+    "outDir": "dist", // build outputs to dist
+    "rootDir": "src", // source code is organized in src
+    "baseUrl": ".",
+    "paths": {
+      "@iot-seer/config": ["../../config/src"]
+    }
+  },
+  "references": [{ "path": "../../config" }],
+  "include": ["src"]
 }

@@ -1,25 +1,32 @@
+import { readFileSync } from "fs";
+import { z } from "zod";
+import toml from "toml";
 
-// src/config.ts
-import { z } from 'zod';
+const userDefinedConfigs = {
+  serviceName: z.string(),
+} satisfies Record<string, z.ZodType>;
+
+const baseTopicsSchema = z.object({
+  rawData: z.string().default("raw"),
+  processedData: z.string().default("treated"),
+  analysisResults: z.string().default("score"),
+});
+
+const systemDefaultedConfigs = {
+  nodeEnv: z.enum(["development", "production"]).default("development"),
+  mqttBrokerURL: z.string().default("mqtt://localhost:1883"),
+  httpPort: z.coerce.number().default(3000),
+  topics: baseTopicsSchema.default(Object),
+} satisfies Record<string, z.ZodType>;
 
 const configSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production']).default('development'),
-  MQTT_BROKER_URL: z.string().default('mqtt://localhost:1883'),
-  HTTP_PORT: z.coerce.number().default(3000),
-  SERVICE_NAME: z.string(),
-  TOPICS: z.object({
-    RAW_DATA: z.string().default('raw'),
-    PROCESSED_DATA: z.string().default('treated'),
-    ANALYSIS_RESULTS: z.string().default('score')
-  })
+  ...userDefinedConfigs,
+  ...systemDefaultedConfigs,
 });
 
 export type Config = z.infer<typeof configSchema>;
-export const config = configSchema.parse({
-  ...process.env,
-  TOPICS: {
-    RAW_DATA: process.env.TOPIC_RAW,
-    PROCESSED_DATA: process.env.TOPIC_PROCESSED,
-    ANALYSIS_RESULTS: process.env.TOPIC_ANALYSIS
-  }
-});
+
+export function loadConfig(filePath: string) {
+  const rawConfig = toml.parse(readFileSync(filePath, "utf-8"));
+  return configSchema.parse(rawConfig);
+}
