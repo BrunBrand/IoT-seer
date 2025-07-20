@@ -1,2 +1,5 @@
 
-- This project aims to study the interaction of the interaction between machine learning, messageries, mqtt protocol of communication and websockets
+
+# IOT Seer - Real-Time Anomaly Detection and Visualization Platform for IoT 
+
+Real-time anomaly detection and visualization platform for high-throughput IoT data streams.
