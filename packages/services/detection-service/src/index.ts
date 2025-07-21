@@ -1,9 +1,8 @@
 import path from "node:path";
-
 import mqtt from "mqtt";
+import { z } from "zod";
 
 import { loadConfig } from "@iot-seer/config";
-import { z } from "zod";
 
 const rootPath = path.dirname(__filename);
 

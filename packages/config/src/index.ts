@@ -16,7 +16,7 @@ const systemDefaultedConfigs = {
   nodeEnv: z.enum(["development", "production"]).default("development"),
   mqttBrokerURL: z.string().default("mqtt://localhost:1883"),
   httpPort: z.coerce.number().default(3000),
-  topics: baseTopicsSchema.default(Object),
+  topics: baseTopicsSchema,
 } satisfies Record<string, z.ZodType>;
 
 const configSchema = z.object({
@@ -27,6 +27,7 @@ const configSchema = z.object({
 export type Config = z.infer<typeof configSchema>;
 
 export function loadConfig(filePath: string) {
-  const rawConfig = toml.parse(readFileSync(filePath, "utf-8"));
-  return configSchema.parse(rawConfig);
+  const tomlConfig = toml.parse(readFileSync(filePath, "utf-8"));
+  const parsedConfig = configSchema.parse(tomlConfig);
+  return parsedConfig;
 }

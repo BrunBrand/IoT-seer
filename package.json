@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "scripts": {
     "build": "npm run build --workspaces",
-    "processing-se": "node packages/services/processing-service/dist/index.js",
-    "detection-se": "node packages/services/detection-service/dist/index.js",
-    "websocket-api-se": "node packages/services/websocket-api-service/dist/index.js",
-    "simulated-data-se": "node packages/services/simulated-data/dist/index.js",
-    "http-to-mqtt-se": "node packages/services/http-mqtt-adapter/dist/index.js",
+    "processing-se": "npm run start -w @iot-seer/processing-service",
+    "detection-se": "npm run start -w @iot-seer/detection-service",
+    "websocket-api-se": "npm run start -w @iot-seer/websocket-api",
+    "simulated-data-se": "npm run start -w @iot-seer/simulated-data",
+    "http-to-mqtt-se": "npm run start -w @iot-seer/http-mqtt-adapter",
     "all": "npm run build && concurrently \"npm run http-to-mqtt-se\"  \"npm run processing-se\" \"npm run detection-se\" \"npm run websocket-api-se\" "
   },
   "dependencies": {

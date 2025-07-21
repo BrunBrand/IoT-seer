@@ -1,24 +1,30 @@
+import path from "node:path";
+import mqtt from "mqtt";
+import { loadConfig } from "@iot-seer/config";
 
-import mqtt from "mqtt"
+const rootPath = path.dirname(__filename);
 
-const topic = "raw"
-const broker = "mqtt://localhost:1883"
+const configFilePath = path.join(rootPath, "config.toml");
+const config = loadConfig(configFilePath);
 
-const client = mqtt.connect(broker);
+const client = mqtt.connect(config.mqttBrokerURL);
 
-client.on("connect", ()=>{
-    console.log("Simulated data script is connected to MQTT broker") 
+console.log("--- Simulated Data Service ---");
+console.log(`--- Publishing to ${config.topics.rawData}---`);
 
-    setInterval(()=>{ 
-        const randomValue = Math.floor(Math.random()*100)
-        client.publish(topic, JSON.stringify({"value": randomValue}) )
-        console.log(`Published ${randomValue} to topic: ${topic}`)
+client.on("connect", () => {
+  console.log("Simulated data script is connected to MQTT broker");
 
-    }, 5000)
+  setInterval(() => {
+    const randomValue = Math.floor(Math.random() * 100);
+    client.publish(
+      config.topics.rawData,
+      JSON.stringify({ value: randomValue })
+    );
+    console.log(`Published ${randomValue} to topic: ${config.topics.rawData}`);
+  }, 5000);
+});
 
-})
-
-client.on("error", (error)=>{
-    console.error(`MQTT connection error: ${error}`)
-})
-
+client.on("error", (error) => {
+  console.error(`MQTT connection error: ${error}`);
+});
