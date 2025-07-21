@@ -1,7 +1,6 @@
 {
-  "name": "@iot-seer/detection-service",
+  "name": "@iot-seer/anomaly-detection-service",
   "private": "true",
-  
   "dependencies": {
     "@iot-seer/config": "1.0.0"
   },
