@@ -11,13 +11,15 @@
     "all": "npm run build && concurrently \"npm run http-to-mqtt-se\"  \"npm run processing-se\" \"npm run detection-se\" \"npm run websocket-api-se\" "
   },
   "dependencies": {
-    "mqtt": "^5.13.2"
+    "mqtt": "^5.13.2",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
   "workspaces": [
     "packages/config",
+    "packages/types",
     "packages/services/*"
   ]
 }

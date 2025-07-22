@@ -1,6 +1,7 @@
 import path from "node:path";
 import mqtt from "mqtt";
 import { loadConfig } from "@iot-seer/config";
+import { deviceMessage, DeviceMessage } from "@iot-seer/types";
 
 const rootPath = path.dirname(__filename);
 
@@ -17,11 +18,18 @@ client.on("connect", () => {
 
   setInterval(() => {
     const randomValue = Math.floor(Math.random() * 100);
-    client.publish(
-      config.topics.rawData,
-      JSON.stringify({ value: randomValue })
-    );
-    console.log(`Published ${randomValue} to topic: ${config.topics.rawData}`);
+    const data: DeviceMessage = deviceMessage.parse({
+      deviceId: randomValue.toString(),
+      timestamp: new Date().toISOString(),
+      location: { lat: 1, lon: 2, place: "testPlace" },
+      sensorType: "motion",
+      data: {},
+      metadata: { firmware: "1", rssi: 1, uptime: 1 },
+      // quality: {},
+    });
+
+    client.publish(config.topics.rawData, JSON.stringify(data));
+    console.log(`Published ${data} to topic: ${config.topics.rawData}`);
   }, 5000);
 });
 

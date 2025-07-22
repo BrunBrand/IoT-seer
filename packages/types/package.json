@@ -1,0 +1,15 @@
+{
+  "name": "@iot-seer/types",
+  "version": "1.0.0",
+  "description": "definition of types to be used by iot-seer services",
+  "license": "ISC",
+  "author": "BrunBrand",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^4.0.5"
+  }
+}

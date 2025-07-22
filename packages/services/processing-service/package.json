@@ -3,7 +3,8 @@
   "private": "true",
   "dependencies": {
     "mqtt": "^5.13.2",
-    "@iot-seer/config": "1.0.0"
+    "@iot-seer/config": "1.0.0",
+    "@iot-seer/types": "1.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && cp config.toml dist/",

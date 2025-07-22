@@ -2,6 +2,7 @@ import path from "node:path";
 import mqtt from "mqtt";
 
 import { loadConfig } from "@iot-seer/config";
+import { deviceMessage } from "@iot-seer/types/dist";
 
 const rootPath = path.dirname(__filename);
 const configFilePath = path.join(rootPath, "config.toml");
@@ -25,6 +26,7 @@ client.on("message", (topic, message) => {
 
   try {
     const data = JSON.parse(message.toString());
+    const dataParsed = deviceMessage.parse(data);
     dataBuffer.push(data.value);
     if (dataBuffer.length > 10) {
       // window of movign average
