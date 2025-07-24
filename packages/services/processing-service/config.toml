@@ -2,3 +2,7 @@ serviceName="Real-Time Processing"
 
 
 [topics]
+
+[parameters]
+window=10
+bufferWindow=6

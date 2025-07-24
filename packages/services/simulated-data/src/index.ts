@@ -13,19 +13,20 @@ const client = mqtt.connect(config.mqttBrokerURL);
 console.log("--- Simulated Data Service ---");
 console.log(`--- Publishing to ${config.topics.rawData}---`);
 
+const registeredIds = [...Array(10).keys()];
+
 client.on("connect", () => {
   console.log("Simulated data script is connected to MQTT broker");
 
   setInterval(() => {
-    const randomValue = Math.floor(Math.random() * 100);
+    const randomValue = Math.floor(Math.random() * 10);
     const data: DeviceMessage = deviceMessage.parse({
-      deviceId: randomValue.toString(),
+      deviceId: "5",
       timestamp: new Date().toISOString(),
       location: { lat: 1, lon: 2, place: "testPlace" },
-      sensorType: "motion",
-      data: {},
+      sensorType: "Motion",
+      data: { speed: Math.floor(Math.random() * 100) },
       metadata: { firmware: "1", rssi: 1, uptime: 1 },
-      // quality: {},
     });
 
     client.publish(config.topics.rawData, JSON.stringify(data));

@@ -1,9 +1,10 @@
 import { readFileSync } from "fs";
-import { z } from "zod";
+import { z, ZodObject } from "zod";
 import toml from "toml";
 
 const userDefinedConfigs = {
   serviceName: z.string(),
+  parameters: z.object().optional().default({}),
 } satisfies Record<string, z.ZodType>;
 
 const baseTopicsSchema = z.object({
@@ -26,8 +27,15 @@ const configSchema = z.object({
 
 export type Config = z.infer<typeof configSchema>;
 
-export function loadConfig(filePath: string) {
+export function loadConfig(
+  filePath: string,
+  serviceConfigSchema: ZodObject = z.object({})
+) {
   const tomlConfig = toml.parse(readFileSync(filePath, "utf-8"));
-  const parsedConfig = configSchema.parse(tomlConfig);
-  return parsedConfig;
+  console.log(tomlConfig);
+  const newShape = z.object({
+    ...configSchema.shape,
+    ...serviceConfigSchema.shape,
+  });
+  return newShape.parse(tomlConfig);
 }
