@@ -4,13 +4,6 @@ const isoTimestamp = z.string().refine((val) => !isNaN(Date.parse(val)), {
   message: "Invalid ISO 8601 timestamp",
 });
 
-const sensorTypeList = [
-  "Temperature",
-  "Humidity",
-  "GPS",
-  "Motion",
-  "Unspecified",
-];
 const dataSensorTypeTemperature = z.object({
   value: z.number(),
   unit: z.enum(["C", "F"]),
@@ -36,8 +29,6 @@ const sensorData = z.union([
   z.object({}),
 ]);
 
-const sensorType = z.enum(sensorTypeList);
-
 const fieldLocation = z.object({
   lat: z.number(),
   lon: z.number(),
@@ -48,7 +39,7 @@ export const deviceMessage = z.object({
   deviceId: z.string(),
   timestamp: isoTimestamp,
   location: fieldLocation,
-  sensorType: sensorType,
+  sensorType: z.string().default("Unspecified"),
   data: sensorData,
   metadata: z.object({
     firmware: z.string().optional(),

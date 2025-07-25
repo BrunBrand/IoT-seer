@@ -20,14 +20,9 @@ const config = loadConfig(
 );
 
 const client = mqtt.connect(config.mqttBrokerURL);
-console.log("this are the loaded parmeters from config", config.parameters);
-console.log("all config", config);
 const parameters = serviceParameterSchema.parse(config.parameters);
 
 const devices: Record<string, DeviceMessage[]> = {};
-
-console.log("intial devices object value");
-console.log(devices);
 
 client.on("connect", () => {
   console.log("Connected to MQTT broker");
@@ -50,7 +45,6 @@ client.on("message", (topic, message) => {
     }
 
     const ref = devices[device.deviceId];
-    console.log("length of arr", ref?.length);
     if (ref === undefined) {
       throw Error("reference is undefined");
     }
@@ -69,16 +63,12 @@ client.on("message", (topic, message) => {
           ((b as DeviceMessage & { data: { speed: number } }).data?.speed ?? 0),
         0
       ) / slice.length;
-    console.log("avg : ", avg);
     const consolidatedData = { ...device, processed: { avg: avg } };
-    // console.log("object forwarded", temp);
     forwardData(client, consolidatedData);
   } catch (error) {
     console.error("Error parsing JSON:", error);
     return;
   }
-  console.log("list of all devices up to here:");
-  console.log(devices);
 });
 
 function forwardData(client: any, average: any) {

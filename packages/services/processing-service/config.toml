@@ -5,4 +5,3 @@ serviceName="Real-Time Processing"
 
 [parameters]
 window=10
-bufferWindow=6
