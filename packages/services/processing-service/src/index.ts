@@ -22,7 +22,34 @@ const config = loadConfig(
 const client = mqtt.connect(config.mqttBrokerURL);
 const parameters = serviceParameterSchema.parse(config.parameters);
 
-const devices: Record<string, DeviceMessage[]> = {};
+type mapOfDevices = Record<string, DeviceMessage[]>;
+const devices: mapOfDevices = {};
+
+function processMotionData(arrData: DeviceMessage[]) {
+  const slice = arrData.slice(Math.max(arrData.length - parameters.window, 0));
+  const avg =
+    slice.reduce(
+      (a, b) =>
+        a +
+        ((b as DeviceMessage & { data: { speed: number } }).data?.speed ?? 0),
+      0
+    ) / slice.length;
+  return { avg: avg };
+}
+
+function processDataFromDevice(deviceMessageList: DeviceMessage[]) {
+  const mostRecentDevice = deviceMessageList[deviceMessageList.length - 1];
+  if (mostRecentDevice === undefined) {
+    return;
+  }
+  switch (mostRecentDevice.sensorType) {
+    case "Motion":
+      return processMotionData(deviceMessageList);
+
+    default:
+      throw new Error(`Invalid sensorType {mostRecentDevice.sensorType}`);
+  }
+}
 
 client.on("connect", () => {
   console.log("Connected to MQTT broker");
@@ -44,26 +71,19 @@ client.on("message", (topic, message) => {
       devices[device.deviceId] = new Array();
     }
 
-    const ref = devices[device.deviceId];
-    if (ref === undefined) {
+    const deviceMessageList = devices[device.deviceId];
+    if (deviceMessageList === undefined) {
       throw Error("reference is undefined");
     }
-    if (ref.length >= parameters.window * 2) {
+    if (deviceMessageList.length >= parameters.window * 2) {
       // #TODO discuss possible I/O procedure to save the content?
-      ref.splice(0, parameters.window);
+      deviceMessageList.splice(0, parameters.window);
     }
-    ref.push(device);
+    deviceMessageList.push(device);
 
-    // example of data calculation based on device type
-    const slice = ref.slice(Math.max(ref.length - parameters.window, 0));
-    const avg =
-      slice.reduce(
-        (a, b) =>
-          a +
-          ((b as DeviceMessage & { data: { speed: number } }).data?.speed ?? 0),
-        0
-      ) / slice.length;
-    const consolidatedData = { ...device, processed: { avg: avg } };
+    const processedData = processDataFromDevice(deviceMessageList);
+
+    const consolidatedData = { ...device, processed: processedData };
     forwardData(client, consolidatedData);
   } catch (error) {
     console.error("Error parsing JSON:", error);
@@ -71,9 +91,8 @@ client.on("message", (topic, message) => {
   }
 });
 
-function forwardData(client: any, average: any) {
-  client.publish(
-    config.topics.processedData,
-    JSON.stringify({ average: average })
-  );
+function forwardData(client: any, message: any) {
+  client.publish(config.topics.processedData, JSON.stringify(message));
+  console.log("pushing");
+  console.log(JSON.stringify(message));
 }
